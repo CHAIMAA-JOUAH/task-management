@@ -1,17 +1,17 @@
-
-FROM php:7.4-apache
-WORKDIR /var/www/html
-
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    zip \
-    unzip \
-    && docker-php-ext-install zip
-
-RUN docker-php-ext-install pdo pdo_mysql
-COPY composer.json composer.lock ./
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && composer install --no-scripts --no-autoloader
+# Step 1: Build React App
+FROM node:alpine3.18 as build
+WORKDIR /app
+COPY package.json .
+COPY pnpm-lock.yaml .
+RUN npm install -g pnpm
+RUN pnpm install
 COPY . .
+RUN pnpm run build
+
+# Step 2: Server With Nginx
+FROM nginx:1.23-alpine
+WORKDIR /usr/share/nginx/html
+RUN rm -rf *
+COPY --from=build /app/build .
 EXPOSE 80
-CMD ["apache2-foreground"]
+ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
