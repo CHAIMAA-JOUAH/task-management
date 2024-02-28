@@ -14,17 +14,17 @@ jobs:
       - name: Login to Docker Hub
         run: docker login -u chaimaajouah -p cj20031118
       - name: Build Docker Image
-        run: docker build -t chaimaajouah / cj-dev .
+        run: docker build -t chaimaajouah/cj-dev .
       - name: Publish image to docker hub
-        run: docker push chaimaajouah / cj-dev:latest   
+        run: docker push chaimaajouah/cj-dev:latest   
 
   deploy: 
     needs: build
     runs-on: aws-ec2    
     steps:
       - name: Pull image from docker hub
-        run: docker pull chaimaajouah / cj-dev:latest 
+        run: docker pull chaimaajouah/cj-dev:latest 
       - name: Delete Old Container
         run: docker rm -f appContainer
       - name: Run docker container
-        run: docker run -d -p 3000:80 --name appContainer chaimaajouah / cj-dev
+        run: docker run -d -p 3000:80 --name appContainer chaimaajouah/cj-dev
