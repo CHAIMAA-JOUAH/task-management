@@ -2,6 +2,7 @@
 FROM node:alpine3.18 as build
 WORKDIR /app
 COPY package.json .
+COPY pnpm-lock.yaml .
 RUN npm install -g pnpm
 RUN pnpm install
 COPY . .
@@ -13,4 +14,4 @@ WORKDIR /usr/share/nginx/html
 RUN rm -rf *
 COPY --from=build /app/build .
 EXPOSE 80
-ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
+ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
